@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Search</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#eaeaea] p-6">
+    <div class="container mx-auto">
+        <h1 class="text-3xl font-bold mb-4">Sportswear Haven</h1>
+        <input type="text" id="searchBar" class="w-1/2 p-2 border border-gray-300 rounded-3xl" placeholder="  Search for products...">
+        <div id="results" class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+    </div>
+
+    <script>
+        document.getElementById('searchBar').addEventListener('input', function() {
+            const query = this.value;
+            if (query.length > 3) {
+                fetch(`/search?q=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const resultsDiv = document.getElementById('results');
+                        resultsDiv.innerHTML = '';
+                        if (data.length === 0) {
+                            resultsDiv.innerHTML = '<p>No results found.</p>';
+                        }
+                        data.forEach(item => {
+                            const card = document.createElement('div');
+                            card.classList.add('max-w-sm', 'rounded', 'overflow-hidden', 'shadow-lg', 'bg-white', 'p-4');
+
+                            const cardContent = `
+                                <div class="px-6 py-4">
+                                    <div class="font-bold text-xl mb-2">${item.name}</div>
+                                    <p class="text-gray-700 text-base">
+                                        Brand: ${item.brand} <br>
+                                        Category: ${item.category}
+                                    </p>
+                                </div>
+                                <div class="px-6 pt-4 pb-2">
+                                    <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#${item.brand.toLowerCase()}</span>
+                                    <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#${item.category.toLowerCase()}</span>
+                                    <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#sportswear</span>
+                                </div>
+                            `;
+
+                            card.innerHTML = cardContent;
+                            resultsDiv.appendChild(card);
+                        });
+                    }).catch(err => {
+                        console.error('Error fetching search results:', err);
+                    });
+            } else {
+                document.getElementById('results').innerHTML = '';
+            }
+        });
+    </script>
+</body>
+</html>
